@@ -58,11 +58,12 @@ def home_page():
                     # Display the name above the rectangle
                     cv2.putText(frame, name, (left*4, top*4 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
 
-                    # Save attendance to firebase
+                    #Save attendance to firebase
                     save_attendance(student_id=id, student_name=name, st=st)
                     cap.release()
                     cv2.destroyAllWindows()
                     break
+
 
             # Display the frame in the Streamlit app
             placeholder.image(frame, channels="BGR", use_column_width=True)
@@ -78,12 +79,11 @@ def attendance_history():
 
 
 def about_page():
-    st.write('This is a Streamlit web application for face recognition based attendance system.')
+    st.write('Attendance management remains a critical aspect of educational institutions and organizational settings,yet traditional methods often prove time-consuming and prone to errors. This study addresses this challenge by proposing a novel solution: a face recognition-based attendance management system. Recognizing the inefficiencies of manual attendance tracking, the study identifies the need for an automated system capable of accurately and efficiently recording attendance. Leveraging advancements in face recognition technology, the proposed system offers a robust solution that automates the attendance tracking process. By utilizing webcam-based face detection and recognition algorithms, combined with user-friendly interface design and cloud-based data storage, the system provides a streamlined and reliable method for attendance management. Through the implementation of the proposed system, educational institutions and organizations can overcome the limitations of traditional attendance tracking methods, saving time, reducing administrative workload, and improving overall efficiency. This study contributes to the advancement of attendance management systems by offering a practical and effective solution to the challenges faced in attendance tracking, ultimately enhancing productivity and accountability in academic and organizational environments.')
 
 
 def main():
-    st.sidebar.title('Menu')
-    page = st.sidebar.radio('Go to', ['Home', 'Attendance record', 'About'])
+    page = st.sidebar.selectbox( 'Menu',['Home', 'Attendance record', 'About'])
 
     if page == 'Home':
         home_page()

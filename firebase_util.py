@@ -33,10 +33,16 @@ def get_attendance(st):
     # Fetch previous attendance records
     with st.spinner('Loading...'):
         attendance_data = firebase_db.child('attendance').get()
-    st.success('Attendance records loaded.')
+
+    # Create an empty placeholder for the success message
+    success_placeholder = st.empty()
 
     if attendance_data:
-        st.subheader('Previous Attendance Records')
+        # Display success message and attendance records
+        success_placeholder.success('Attendance records loaded.')
+
         attendance_list = [{'Name': data['student_name'], 'ID': data['student_id'], 'Date': data['date']} for data in attendance_data.values()]
         st.table(attendance_list)
-        
+    else:
+        # Display warning message if no attendance record found
+        success_placeholder.warning('No attendance record found')

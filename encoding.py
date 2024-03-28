@@ -5,20 +5,20 @@ import os
 
 img_path = 'dataset'
 path_list = os.listdir(img_path)
-#print(path_list)
 
 img_list = []
 student_names = []
-student_ids = ["PAS/CSC/19/018", 'PAS/CSC/19/025', 'PAS/CSC/19/003', 'PAS/CSC/19/016', 'PAS/CSC/17/013']
+student_ids = []
 
 for path in path_list:
     image = cv2.imread(os.path.join(img_path, path))
     img_list.append(image)
-    image_name = os.path.splitext(path)[0]
+    image_name, student_id= path.split('.')[0], path.split('.')[1]
     student_names.append(image_name)
+    student_ids.append(student_id.replace('-','/'))
 
 
-def find_encodings(img_list):
+def encode_imgs(img_list):
     encode_list = []
 
     for img in img_list:
@@ -28,7 +28,7 @@ def find_encodings(img_list):
 
     return encode_list
 
-encode_list = find_encodings(img_list)
+encode_list = encode_imgs(img_list)
 encode_list_with_names_and_ids = [encode_list, student_names, student_ids]
 
 file = open('encoded_imgs.p', 'wb')
