@@ -35,4 +35,3 @@ file = open('encoded_imgs.p', 'wb')
 pickle.dump(encode_list_with_names_and_ids, file)
 file.close()
 print('File saved!')
-

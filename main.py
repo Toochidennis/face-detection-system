@@ -11,6 +11,7 @@ file = open('encoded_imgs.p', 'rb')
 encode_list_with_names_and_ids = pickle.load(file)
 file.close()
 encode_list, student_names, student_ids = encode_list_with_names_and_ids
+distance_threshold= 0.5
 
 
 def home_page():
@@ -36,7 +37,9 @@ def home_page():
                 break
 
             img = cv2.resize(frame, (0, 0), None, 0.25, 0.25)
+            img = img[:, :, ::-1]
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            
 
             # Perform face detection and recognition
             current_frame = face_recognition.face_locations(img)
@@ -45,23 +48,33 @@ def home_page():
             for encode_face, face_location in zip(encode_frame, current_frame):
                 matches = face_recognition.compare_faces(encode_list, encode_face)
                 face_distance = face_recognition.face_distance(encode_list,encode_face)
+                print('Distance frame', face_distance)
                 match_index = np.argmin(face_distance)
 
+
                 if matches[match_index]:
-                    top, right, bottom, left = face_location  # Extract face coordinates
-                    name = student_names[match_index]
-                    id = student_ids[match_index]
+                    if face_distance[match_index] <= distance_threshold:
+                        top, right, bottom, left = face_location  # Extract face coordinates
+                        name = student_names[match_index]
+                        id = student_ids[match_index]
 
-                    # Draw a rectangle around the detected face
-                    cv2.rectangle(frame, (left*4, top*4), (right*4, bottom*4), (0, 255, 0), 2)
+                        # Draw a rectangle around the detected face
+                        cv2.rectangle(frame, (left*4, top*4), (right*4, bottom*4), (0, 255, 0), 2)
 
-                    # Display the name above the rectangle
-                    cv2.putText(frame, name, (left*4, top*4 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+                        # Display the name above the rectangle
+                        cv2.putText(frame, name, (left*4, top*4 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
 
-                    #Save attendance to firebase
-                    save_attendance(student_id=id, student_name=name, st=st)
+                        #Save attendance to firebase
+                        save_attendance(student_id=id, student_name=name, st=st)
+                        cap.release()
+                        break
+                    else:
+                        st.warning('Face not found')
+                        cap.release()
+                        break
+                else:
+                    st.warning('Face not found')
                     cap.release()
-                    cv2.destroyAllWindows()
                     break
 
 
@@ -71,6 +84,8 @@ def home_page():
             # Check for key press to stop the loop
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
+
+cv2.destroyAllWindows()
 
         
 def attendance_history():
